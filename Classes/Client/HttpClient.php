@@ -27,6 +27,7 @@ namespace TS\Restclient\Client;
 ***************************************************************/
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 
 /**
  * REST client
@@ -104,7 +105,7 @@ class HttpClient {
   protected $request;
 
   /**
-   * @var \TYPO3\CMS\Core\Log\LogManager
+   * @var \TYPO3\CMS\Core\Log\Logger
    */
   protected $logger;
 
@@ -142,7 +143,7 @@ class HttpClient {
    */
   protected function initClient() {
 
-    $extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['restclient']);
+    $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('restclient');
     if ($extConf['error_throw_exception'] === "1") {
       $this -> settings[self::SETTINGS_KEY_EXCEPTION] = true;
     }
@@ -581,7 +582,7 @@ class HttpClient {
 
     if (isset($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/restclient/Classes/HttpClient.php']['responsePreProcess'])) {
       foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/restclient/Classes/HttpClient.php']['responsePreProcess'] as $hookClassResponsePreProcess) {
-        $hookObjectResponsePreProcess = \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($hookClassResponsePreProcess);
+        $hookObjectResponsePreProcess = GeneralUtility::makeInstance($hookClassResponsePreProcess);
         $hookObjectResponsePreProcess -> responsePreProcess($response, $this);
       }
     }
